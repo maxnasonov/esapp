@@ -15,6 +15,7 @@ import java.util.Arrays;
 import com.floragunn.searchguard.ssl.SearchGuardSSLPlugin;
 import com.floragunn.searchguard.ssl.util.SSLConfigConstants;
 //import org.apache.log4j.Logger;
+import org.elasticsearch.cluster.health.ClusterHealthStatus;
 
 /**
  * Hello world!
@@ -33,24 +34,26 @@ public class App
 
         //Client client = new PreBuiltTransportClient(Settings.EMPTY, SearchGuardPlugin.class)
 Settings settings = Settings.builder()
-                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_PEMCERT_FILEPATH, "/Users/nasonov/Dropbox/riskmatch/esapp/admin.crt")
-                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_PEMKEY_FILEPATH, "/Users/nasonov/Dropbox/riskmatch/esapp/admin.key")
+                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_PEMCERT_FILEPATH, "/Users/nasonov/Dropbox/riskmatch/esapp/client.crt")
+                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_PEMKEY_FILEPATH, "/Users/nasonov/Dropbox/riskmatch/esapp/client.key")
                 .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_PEMTRUSTEDCAS_FILEPATH, "/Users/nasonov/Dropbox/riskmatch/esapp/ca.crt")
                 .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_ENFORCE_HOSTNAME_VERIFICATION, false)
                 .put("path.home", "/Users/nasonov/Dropbox/riskmatch/esapp")
-  .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_KEYSTORE_PASSWORD, "pass123")
-  .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_TRUSTSTORE_PASSWORD, "pass123")
+  //.put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_KEYSTORE_PASSWORD, "pass123")
+  //.put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_TRUSTSTORE_PASSWORD, "pass123")
                 .build();
         //Client client = new PreBuiltTransportClient(Settings.EMPTY, SearchGuardSSLPlugin::class.java)
         Client client = new PreBuiltTransportClient(settings, SearchGuardSSLPlugin.class)
             //.addTransportAddress(address);
-            .addTransportAddress(new InetSocketTransportAddress(InetAddresses.forString("10.199.11.53"), 9300));
+            .addTransportAddress(new InetSocketTransportAddress(InetAddresses.forString("10.17.68.218"), 9300));
         ImmutableOpenMap<String, IndexMetaData> indices = client.admin().cluster()
                 .prepareState().get().getState()
                     .getMetaData().getIndices();
+        ClusterHealthStatus health = client.admin().cluster().prepareHealth().get().getStatus();
         //for (String key: indices.keySet()) {
         //    System.out.println(key);
         //}
             System.out.println(indices.toString());
+            System.out.println(health.toString());
     }
 }
